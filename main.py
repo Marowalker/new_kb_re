@@ -45,7 +45,7 @@ def main_knowledge_base():
 
     with tf.device('/device:GPU:0'):
 
-        transe = TransEModel(model_path=constants.TRAINED_MODELS + 'transe/', batch_size=256, epochs=constants.EPOCHS,
+        transe = TransEModel(model_path=constants.TRAINED_MODELS + 'transe/', batch_size=64, epochs=constants.EPOCHS,
                              score=constants.SCORE)
         transe.build(train_dict, test_dict)
         transe.train(early_stopping=True, patience=constants.PATIENCE)
@@ -105,15 +105,15 @@ def main_re():
         vocab_rels = make_vocab(constants.ENTITY_PATH + 'relation2id.txt')
 
         # Create Dataset objects and dump into files
-        train = Dataset(constants.SDP + 'sdp_data_old_ver.train.txt', constants.SDP + 'sdp_triple.train.txt',
+        train = Dataset(constants.SDP + 'sdp_data_with_titles.train.txt', constants.SDP + 'sdp_triple.train.txt',
                         vocab_words=vocab_words, vocab_poses=vocab_poses, vocab_synset=vocab_synsets,
                         vocab_depends=vocab_depends, vocab_chems=vocab_chems, vocab_dis=vocab_dis, vocab_rels=vocab_rels)
         pickle.dump(train, open(constants.PICKLE + 'sdp_train.pickle', 'wb'), pickle.HIGHEST_PROTOCOL)
-        dev = Dataset(constants.SDP + 'sdp_data_old_ver.dev.txt', constants.SDP + 'sdp_triple.dev.txt',
+        dev = Dataset(constants.SDP + 'sdp_data_with_titles.dev.txt', constants.SDP + 'sdp_triple.dev.txt',
                       vocab_words=vocab_words, vocab_poses=vocab_poses, vocab_synset=vocab_synsets,
                       vocab_depends=vocab_depends, vocab_chems=vocab_chems, vocab_dis=vocab_dis, vocab_rels=vocab_rels)
         pickle.dump(dev, open(constants.PICKLE + 'sdp_dev.pickle', 'wb'), pickle.HIGHEST_PROTOCOL)
-        test = Dataset(constants.SDP + 'sdp_data_old_ver.test.txt', constants.SDP + 'sdp_triple.test.txt',
+        test = Dataset(constants.SDP + 'sdp_data_with_titles.test.txt', constants.SDP + 'sdp_triple.test.txt',
                        vocab_words=vocab_words, vocab_poses=vocab_poses, vocab_synset=vocab_synsets,
                        vocab_depends=vocab_depends, vocab_chems=vocab_chems, vocab_dis=vocab_dis, vocab_rels=vocab_rels)
         pickle.dump(test, open(constants.PICKLE + 'sdp_test.pickle', 'wb'), pickle.HIGHEST_PROTOCOL)

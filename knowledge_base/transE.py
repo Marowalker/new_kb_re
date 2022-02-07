@@ -36,7 +36,7 @@ class TransEModel:
         self.rel_size = count_vocab(constants.ENTITY_PATH + 'relation2id.txt')
         self.epochs = epochs
         self.initializer = tf.keras.initializers.GlorotUniform()
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.002)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-4)
         self.dataset_train = None
         self.dataset_val = None
         self.score = score
@@ -172,7 +172,8 @@ class TransEModel:
                 elif 'disease' in w.name:
                     w = self.disease_embedings * w
                 else:
-                    w = self.relation_embeddings * w
+                    # w = self.relation_embeddings * w
+                    pass
                 new_weights.append(w)
 
             all_embeddings = tf.concat(new_weights, axis=0).numpy()
