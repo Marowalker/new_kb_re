@@ -517,6 +517,7 @@ class REModel:
             self.model.save_weights(self.model_path)
 
     def _accuracy(self, features, labels):
+
         logits = self.model(features, training=True)
         accuracy = []
         f1 = []
