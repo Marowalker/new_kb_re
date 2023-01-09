@@ -1,7 +1,8 @@
 import constants
 from knowledge_base.preprocessing import make_pickle, wordnet_pickle
 import pickle
-from knowledge_base.transE import TransEModel, WordnetTransE
+from knowledge_base.tf2_transE import TransEModel, WordnetTransE
+from knowledge_base.transH import TransHModel
 from knowledge_base.utils import make_vocab
 import tensorflow as tf
 from relation_extraction.dataset import Dataset
@@ -45,12 +46,16 @@ def main_knowledge_base():
 
     with tf.device('/device:GPU:0'):
 
-        transe = TransEModel(model_path=constants.TRAINED_MODELS + 'transe/', batch_size=256, epochs=constants.EPOCHS,
+        transe = TransEModel(model_path=constants.TRAINED_MODELS + 'transe/', batch_size=128, epochs=constants.EPOCHS,
                              score=constants.SCORE)
+        # transe = TransHModel(model_path=constants.TRAINED_MODELS + 'transh/', batch_size=64, epochs=constants.EPOCHS,
+        #                      score=constants.SCORE)
         transe.build(train_dict, test_dict)
-        transe.train(early_stopping=True, patience=constants.PATIENCE)
-        all_emb = transe.load('data/w2v_model/triple_embeddings.pkl')
+        # transe.train(early_stopping=True, patience=constants.PATIENCE)
+        # all_emb = transe.load('data/w2v_model/triple_embeddings.pkl')
+        all_emb = transe.load(load_file='data/w2v_model/transe_'+ constants.EMBED_TYPE + '_embeddings_' + str(constants.INPUT_W2V_DIM) + '.pkl', embed_type=constants.EMBED_TYPE)
         print(all_emb)
+        print(all_emb.shape)
 
 
 def main_wordnet():
@@ -105,15 +110,15 @@ def main_re():
         vocab_rels = make_vocab(constants.ENTITY_PATH + 'relation2id.txt')
 
         # Create Dataset objects and dump into files
-        train = Dataset(constants.SDP + 'sdp_data_old_ver.train.txt', constants.SDP + 'sdp_triple.train.txt',
+        train = Dataset(constants.SDP + 'sdp_data_with_titles.train.txt', constants.SDP + 'sdp_triple.train.txt',
                         vocab_words=vocab_words, vocab_poses=vocab_poses, vocab_synset=vocab_synsets,
                         vocab_depends=vocab_depends, vocab_chems=vocab_chems, vocab_dis=vocab_dis, vocab_rels=vocab_rels)
         pickle.dump(train, open(constants.PICKLE + 'sdp_train.pickle', 'wb'), pickle.HIGHEST_PROTOCOL)
-        dev = Dataset(constants.SDP + 'sdp_data_old_ver.dev.txt', constants.SDP + 'sdp_triple.dev.txt',
+        dev = Dataset(constants.SDP + 'sdp_data_with_titles.dev.txt', constants.SDP + 'sdp_triple.dev.txt',
                       vocab_words=vocab_words, vocab_poses=vocab_poses, vocab_synset=vocab_synsets,
                       vocab_depends=vocab_depends, vocab_chems=vocab_chems, vocab_dis=vocab_dis, vocab_rels=vocab_rels)
         pickle.dump(dev, open(constants.PICKLE + 'sdp_dev.pickle', 'wb'), pickle.HIGHEST_PROTOCOL)
-        test = Dataset(constants.SDP + 'sdp_data_old_ver.test.txt', constants.SDP + 'sdp_triple.test.txt',
+        test = Dataset(constants.SDP + 'sdp_data_with_titles.test.txt', constants.SDP + 'sdp_triple.test.txt',
                        vocab_words=vocab_words, vocab_poses=vocab_poses, vocab_synset=vocab_synsets,
                        vocab_depends=vocab_depends, vocab_chems=vocab_chems, vocab_dis=vocab_dis, vocab_rels=vocab_rels)
         pickle.dump(test, open(constants.PICKLE + 'sdp_test.pickle', 'wb'), pickle.HIGHEST_PROTOCOL)

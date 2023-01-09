@@ -36,7 +36,7 @@ class TransEModel:
         self.rel_size = count_vocab(constants.ENTITY_PATH + 'relation2id.txt')
         self.epochs = epochs
         self.initializer = tf.keras.initializers.GlorotUniform()
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.002)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=2e-3)
         self.dataset_train = None
         self.dataset_val = None
         self.score = score
@@ -117,7 +117,7 @@ class TransEModel:
                     loss_value = tf.reduce_sum(input_tensor=tf.maximum(0.0, 1.0 + score_pos - score_neg))
                     grads = tape.gradient(loss_value, self.model.trainable_weights)
                 self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
-                if idx % 10000 == 0:
+                if idx % 2000 == 0:
                     Log.log("Iter {}, Loss: {} ".format(idx, loss_value))
 
             if early_stopping:
@@ -157,7 +157,7 @@ class TransEModel:
     def save_model(self):
         self.model.save_weights(self.model_path)
 
-    def load(self, load_file=None):
+    def load(self, load_file=None, embed_type=None):
         if not os.path.exists(load_file):
             self.model.load_weights(self.model_path)
             all_weights = []
@@ -167,13 +167,18 @@ class TransEModel:
 
             new_weights = []
             for w in all_weights:
-                if 'chemical' in w.name:
+                if embed_type == 'chemical' and embed_type in w.name:
                     w = self.chemical_embeddings * w
-                elif 'disease' in w.name:
+                    new_weights.append(w)
+                elif embed_type == 'disease' and embed_type in w.name:
                     w = self.disease_embedings * w
+                    new_weights.append(w)
                 else:
-                    w = self.relation_embeddings * w
-                new_weights.append(w)
+                    # w1 = self.chemical_embeddings * w
+                    # w2 = self.disease_embedings * w
+                    # new_weights.append(w1)
+                    # new_weights.append(w2)
+                    pass
 
             all_embeddings = tf.concat(new_weights, axis=0).numpy()
             f = open(load_file, 'wb')
@@ -194,7 +199,7 @@ class WordnetTransE:
         self.rel_size = count_wordnet(constants.WORDNET_PATH + 'wordnet-relations.txt')
         self.epochs = epochs
         self.initializer = tf.keras.initializers.GlorotUniform()
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.002)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-4)
         self.dataset_train = None
         self.dataset_val = None
         self.score = score

@@ -1,7 +1,7 @@
-matplotlib~=3.3.4
-nltk~=3.5
-spacy~=2.0.5
-tensorflow~=2.3.0
-tensorflow-gpu~=2.3.0
-numpy~=1.18.5
-scikit-learn~=0.23.1
+matplotlib
+nltk
+spacy
+tensorflow
+tensorflow-gpu
+numpy
+scikit-learn
