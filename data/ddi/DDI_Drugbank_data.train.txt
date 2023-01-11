@@ -25287,7 +25287,7 @@ DDI-DrugBank.d212.s18	false	DDI-DrugBank.d212.s18.e0	DDI-DrugBank.d212.s18.e1
 DDI-DrugBank.d212.s19|a|Warfarin Keppra  (1000 mg twice daily) did not influence the pharmacokinetics of R and S warfarin.
 DDI-DrugBank.d212.s19	0	7	Warfarin	drug	DDI-DrugBank.d212.s19.e0
 DDI-DrugBank.d212.s19	9	14	Keppra	brand	DDI-DrugBank.d212.s19.e1
-DDI-DrugBank.d212.s19	81	81	R warfarin	drug	DDI-DrugBank.d212.s19.e2
+DDI-DrugBank.d212.s19	81	98	R warfarin	drug	DDI-DrugBank.d212.s19.e2
 DDI-DrugBank.d212.s19	89	96	R warfarin	drug	DDI-DrugBank.d212.s19.e2
 DDI-DrugBank.d212.s19	87	96	S warfarin	drug	DDI-DrugBank.d212.s19.e3
 DDI-DrugBank.d212.s19	false	DDI-DrugBank.d212.s19.e0	DDI-DrugBank.d212.s19.e1
