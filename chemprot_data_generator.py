@@ -59,7 +59,7 @@ output_path = "data/chemprot"
 datasets = ['train', 'dev', 'test']
 for dataset in datasets:
     print('Process dataset: ' + dataset)
-    reader = BioCreativeReader(os.path.join(input_path, "cdr_" + dataset + ".txt"))
+    reader = BioCreativeReader(os.path.join(input_path, "chemprot_data_" + dataset + ".txt"))
     raw_documents = reader.read()
     raw_entities = reader.read_entity()
     raw_relations = reader.read_relation()
@@ -129,6 +129,12 @@ for dataset in datasets:
                     chem_token = chem_entity.tokens[-1]
                     dis_token = dis_entity.tokens[-1]
 
+                    start_e1 = chem_token.doc_offset[0]
+                    end_e1 = chem_token.doc_offset[1]
+
+                    start_e2 = dis_token.doc_offset[0]
+                    end_e2 = dis_token.doc_offset[1]
+
                     # r_path = spd_finder.find_sdp(deptree, chem_token, dis_token)
                     r_path, sb_path = spd_finder.find_sdp_with_sibling(deptree, chem_token, dis_token)
 
@@ -139,7 +145,22 @@ for dataset in datasets:
 
                     path = spd_finder.parse_directed_sdp(new_r_path)
 
-                    sent_path = ' '.join([token.content for token in sent.tokens])
+                    sent_list = []
+                    for idx, tok in enumerate(sent.tokens):
+                        word = tok.content
+                        if tok.doc_offset[0] == start_e1:
+                            word = '<e1>' + word
+                        if tok.doc_offset[1] == end_e1:
+                            word = word + '</e1>'
+                        if tok.doc_offset[0] == start_e2:
+                            word = '<e2>' + word
+                        if tok.doc_offset[1] == end_e1:
+                            word = word + '</e2>'
+                        word = word + '_' + str(idx) + '\\' + tok.metadata['pos_tag'] + '\\' + tok.metadata['hypernym']
+                        sent_list.append(word)
+
+                    # sent_path = ' '.join([token.content for token in sent.tokens])
+                    sent_path = ' '.join(sent_list)
 
                     if path:
                         temp = []
@@ -151,12 +172,26 @@ for dataset in datasets:
                         chem_ids = chem_entity.ids[constants.MESH_KEY].split('|')
                         dis_ids = dis_entity.ids[constants.MESH_KEY].split('|')
                         rel = 'NONE'
-                        rel_list = ['CPR:3', 'CPR:4', 'CPR:5', 'CPR:6', 'CPR:9']
                         for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
-                            for r in rel_list:
-                                if (doc.id, r, chem_id, dis_id) in relation:
-                                    rel = r
-                                    break
+                            if (doc.id, 'CPR:3', chem_id, dis_id) in relation:
+                                rel = 'CPR:3'
+                                break
+
+                            if (doc.id, 'CPR:4', chem_id, dis_id) in relation:
+                                rel = 'CPR:4'
+                                break
+
+                            if (doc.id, 'CPR:5', chem_id, dis_id) in relation:
+                                rel = 'CPR:5'
+                                break
+
+                            if (doc.id, 'CPR:6', chem_id, dis_id) in relation:
+                                rel = 'CPR:6'
+                                break
+
+                            if (doc.id, 'CPR:9', chem_id, dis_id) in relation:
+                                rel = 'CPR:9'
+                                break
 
                         for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
                             key = '{}_{}'.format(chem_id, dis_id)
