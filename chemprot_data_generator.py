@@ -59,7 +59,7 @@ output_path = "data/chemprot"
 datasets = ['train', 'dev', 'test']
 for dataset in datasets:
     print('Process dataset: ' + dataset)
-    reader = BioCreativeReader(os.path.join(input_path, "chemprot_data_" + dataset + ".txt"))
+    reader = BioCreativeReader(os.path.join(input_path, "chemprot_data." + dataset + ".txt"))
     raw_documents = reader.read()
     raw_entities = reader.read_entity()
     raw_relations = reader.read_relation()
