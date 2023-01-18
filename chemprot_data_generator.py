@@ -177,19 +177,19 @@ for dataset in datasets:
                                 rel = 'CPR:3'
                                 break
 
-                            if (doc.id, 'CPR:4', chem_id, dis_id) in relation:
+                            elif (doc.id, 'CPR:4', chem_id, dis_id) in relation:
                                 rel = 'CPR:4'
                                 break
 
-                            if (doc.id, 'CPR:5', chem_id, dis_id) in relation:
+                            elif (doc.id, 'CPR:5', chem_id, dis_id) in relation:
                                 rel = 'CPR:5'
                                 break
 
-                            if (doc.id, 'CPR:6', chem_id, dis_id) in relation:
+                            elif (doc.id, 'CPR:6', chem_id, dis_id) in relation:
                                 rel = 'CPR:6'
                                 break
 
-                            if (doc.id, 'CPR:9', chem_id, dis_id) in relation:
+                            elif (doc.id, 'CPR:9', chem_id, dis_id) in relation:
                                 rel = 'CPR:9'
                                 break
 
