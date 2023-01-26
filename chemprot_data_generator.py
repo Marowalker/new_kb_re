@@ -171,26 +171,29 @@ for dataset in datasets:
                         new_path = " ".join(temp)
                         chem_ids = chem_entity.ids[constants.MESH_KEY].split('|')
                         dis_ids = dis_entity.ids[constants.MESH_KEY].split('|')
-                        rel = 'NONE'
+                        rel = 'CPR:3'
                         for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
-                            if (doc.id, 'CPR:3', chem_id, dis_id) in relation:
+                            if (doc.id, 'CPR:3', chem_id, dis_id) not in relation:
+                                if (doc.id, 'CPR:4', chem_id, dis_id) not in relation:
+                                    if (doc.id, 'CPR:5', chem_id, dis_id) not in relation:
+                                        if (doc.id, 'CPR:6', chem_id, dis_id) not in relation:
+                                            if (doc.id, 'CPR:9', chem_id, dis_id) not in relation:
+                                                rel = 'NONE'
+                                                break
+                                            else:
+                                                rel = 'CPR:9'
+                                                break
+                                        else:
+                                            rel = 'CPR:6'
+                                            break
+                                    else:
+                                        rel = 'CPR:5'
+                                        break
+                                else:
+                                    rel = 'CPR:4'
+                                    break
+                            else:
                                 rel = 'CPR:3'
-                                break
-
-                            elif (doc.id, 'CPR:4', chem_id, dis_id) in relation:
-                                rel = 'CPR:4'
-                                break
-
-                            elif (doc.id, 'CPR:5', chem_id, dis_id) in relation:
-                                rel = 'CPR:5'
-                                break
-
-                            elif (doc.id, 'CPR:6', chem_id, dis_id) in relation:
-                                rel = 'CPR:6'
-                                break
-
-                            elif (doc.id, 'CPR:9', chem_id, dis_id) in relation:
-                                rel = 'CPR:9'
                                 break
 
                         for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
