@@ -70,7 +70,7 @@ class BioCreativeReader(Reader):
         # regex = re.compile(r'^([\d]+)\t(true)\t([\S]+)\t([\S]+)$', re.U | re.I)
 
         # for chemprot
-        regex = re.compile(r'^([\d]+)\t(CPR\d)\t([\S]+)\t([\S]+)$', re.U | re.I)
+        regex = re.compile(r'^([\d]+)\t(CPR:\d)\t([\S]+)\t([\S]+)$', re.U | re.I)
 
         ret = defaultdict(list)
 
