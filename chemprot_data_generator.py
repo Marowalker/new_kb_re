@@ -154,7 +154,7 @@ for dataset in datasets:
                             word = word + '</e1>'
                         if tok.doc_offset[0] == start_e2:
                             word = '<e2>' + word
-                        if tok.doc_offset[1] == end_e1:
+                        if tok.doc_offset[1] == end_e2:
                             word = word + '</e2>'
                         word = word + '_' + str(idx) + '\\' + tok.metadata['pos_tag'] + '\\' + tok.metadata['hypernym']
                         sent_list.append(word)
