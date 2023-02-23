@@ -26,13 +26,21 @@ def main_knowledge_base():
         test_dict = make_pickle(constants.ENTITY_PATH + 'test2id.txt', constants.PICKLE + 'test_triple_data.pkl')
     else:
         print('Load data...')
-        with open(constants.PICKLE + 'train_triple_data.pkl', 'rb') as f:
+        # with open(constants.PICKLE + 'train_triple_data.pkl', 'rb') as f:
+        #     train_dict = pickle.load(f)
+        #     f.close()
+        # with open(constants.PICKLE + 'val_triple_data.pkl', 'rb') as f:
+        #     val_dict = pickle.load(f)
+        #     f.close()
+        # with open(constants.PICKLE + 'test_triple_data.pkl', 'rb') as f:
+        #     test_dict = pickle.load(f)
+        with open(constants.PICKLE + 'train_triple_chemprot.pkl', 'rb') as f:
             train_dict = pickle.load(f)
             f.close()
-        with open(constants.PICKLE + 'val_triple_data.pkl', 'rb') as f:
+        with open(constants.PICKLE + 'val_triple_chemprot.pkl', 'rb') as f:
             val_dict = pickle.load(f)
             f.close()
-        with open(constants.PICKLE + 'test_triple_data.pkl', 'rb') as f:
+        with open(constants.PICKLE + 'test_triple_chemprot.pkl', 'rb') as f:
             test_dict = pickle.load(f)
 
     print("Train shape: ", len(train_dict['head']))
@@ -53,7 +61,8 @@ def main_knowledge_base():
         transe.build(train_dict, test_dict)
         # transe.train(early_stopping=True, patience=constants.PATIENCE)
         # all_emb = transe.load('data/w2v_model/triple_embeddings.pkl')
-        all_emb = transe.load(load_file='data/w2v_model/transe_'+ constants.EMBED_TYPE + '_embeddings_' + str(constants.INPUT_W2V_DIM) + '.pkl', embed_type=constants.EMBED_TYPE)
+        all_emb = transe.load(load_file='data/w2v_model/transe_' + constants.EMBED_TYPE + '_embeddings_chemprot_' +
+                                        str(constants.INPUT_W2V_DIM) + '.pkl', embed_type=constants.EMBED_TYPE)
         print(all_emb)
         print(all_emb.shape)
 

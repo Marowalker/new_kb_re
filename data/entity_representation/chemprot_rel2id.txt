@@ -1,0 +1,6 @@
+5
+1	recruited E3 ligase
+2	target
+3	autophagy-targeting protein
+4	recruited e3 ligase
+5	lysosome-targeting protein

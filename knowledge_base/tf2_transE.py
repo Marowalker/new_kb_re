@@ -31,9 +31,12 @@ class TransEModel:
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
         self.batch_size = batch_size
-        self.chem_size = count_vocab(constants.ENTITY_PATH + 'chemical2id.txt')
-        self.dis_size = count_vocab(constants.ENTITY_PATH + 'disease2id.txt')
-        self.rel_size = count_vocab(constants.ENTITY_PATH + 'relation2id.txt')
+        # self.chem_size = count_vocab(constants.ENTITY_PATH + 'chemical2id.txt')
+        # self.dis_size = count_vocab(constants.ENTITY_PATH + 'disease2id.txt')
+        # self.rel_size = count_vocab(constants.ENTITY_PATH + 'relation2id.txt')
+        self.chem_size = count_vocab(constants.ENTITY_PATH + 'chemprot_chemical2id.txt')
+        self.dis_size = count_vocab(constants.ENTITY_PATH + 'chemprot_gene2id.txt')
+        self.rel_size = count_vocab(constants.ENTITY_PATH + 'chemprot_rel2id.txt')
         self.epochs = epochs
         self.initializer = tf.keras.initializers.GlorotUniform()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=1e-4)
@@ -119,7 +122,8 @@ class TransEModel:
                     score_pos = self.score_function(h, t, r)
                     score_neg = self.score_function(h_n, t_n, r)
                     # loss_value = tf.reduce_sum(input_tensor=tf.maximum(0.0, 1.0 + score_pos - score_neg))
-                    loss_value = tf.reduce_sum(input_tensor=tf.math.add(tf.math.log(tf.math.exp(1.0 + score_pos)), tf.math.log(tf.math.exp(1.0 - score_neg))))
+                    loss_value = tf.reduce_sum(input_tensor=tf.math.add(tf.math.log(tf.math.exp(1.0 + score_pos)),
+                                                                        tf.math.log(tf.math.exp(1.0 - score_neg))))
                     grads = tape.gradient(loss_value, self.model.trainable_weights)
                 self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
                 if idx % 5000 == 0:
@@ -137,7 +141,8 @@ class TransEModel:
                     score_pos = self.score_function(h, t, r)
                     score_neg = self.score_function(h_n, t_n, r)
                     # v_loss = tf.reduce_sum(input_tensor=tf.maximum(0.0, 1.0 + score_pos - score_neg))
-                    v_loss = tf.reduce_sum(input_tensor=tf.math.add(tf.math.log(tf.math.exp(1.0 + score_pos)), tf.math.log(tf.math.exp(1.0 - score_neg))))
+                    v_loss = tf.reduce_sum(input_tensor=tf.math.add(tf.math.log(tf.math.exp(1.0 + score_pos)),
+                                                                    tf.math.log(tf.math.exp(1.0 - score_neg))))
                     total_loss.append(float(v_loss))
 
                 val_loss = np.mean(total_loss)
@@ -169,10 +174,10 @@ class TransEModel:
             self.model.load_weights(self.model_path)
             for layer in self.model.layers:
                 for weight in layer.weights:
-                      all_weights.append(weight)
+                    all_weights.append(weight)
             if embed_type == 'chemical':
                 all_embeddings = all_weights[0].numpy()
-            else: 
+            else:
                 all_embeddings = all_weights[1].numpy()
             f = open(load_file, 'wb')
             pickle.dump(all_embeddings, f)
@@ -332,5 +337,3 @@ class WordnetTransE:
             f = open(load_file, 'rb')
             all_embeddings = pickle.load(f)
         return all_embeddings
-
-
