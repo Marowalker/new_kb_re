@@ -11,13 +11,15 @@ import copy
 import os
 from feature_engineering.deptree.sdp import Finder
 from sklearn.utils import shuffle
-from feature_engineering.graph.dependency_graph import DepGraph
+from feature_engineering.deptree.deptree_model import DepTree
 from relation_extraction.utils import load_vocab, get_trimmed_w2v_vectors
 from knowledge_base.utils import make_vocab
 import numpy as np
 import pickle
 from knowledge_base.utils import wordnet_triple_vocab, make_wordnet_vocab
 from relation_extraction.dataset import Dataset
+from models import Token
+
 
 def process_one(doc):
     a = list()
@@ -108,4 +110,12 @@ for dataset in datasets:
         data_tree[doc.id] = dep_tree
 
     for doc_idx in data_tree:
-        print(data_tree[doc_idx])
+        # print(data_tree[doc_idx])
+        root_node = Token(content='$ROOT$')
+        all_trees = []
+        for edges in data_tree[doc_idx]:
+            sub_tree = DepTree(edges=edges)
+            all_trees.extend(edges)
+            root_edge = ('sent', root_node, sub_tree.root)
+            all_trees.append(root_edge)
+        print(all_trees)

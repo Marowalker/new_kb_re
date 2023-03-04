@@ -1,5 +1,5 @@
 import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
+# from networkx.drawing.nx_agraph import graphviz_layout
 
 import constants
 import models
@@ -22,17 +22,21 @@ class DepTree:
             self.tree = nx.DiGraph()
 
             for e in edges:
-                self.tree.add_node(e[1], pos_tag=e[1].metadata['pos_tag'], hypernym=e[1].metadata['hypernym'],
-                                   label=e[1].content, doc_offset=e[1].doc_offset, sent_offset=e[1].sent_offset)
-                self.tree.add_node(e[2], pos_tag=e[2].metadata['pos_tag'], hypernym=e[2].metadata['hypernym'],
-                                   label=e[2].content, doc_offset=e[2].doc_offset, sent_offset=e[2].sent_offset)
-                self.tree.add_edge(e[1], e[2], relation=e[0], type='dependency', weight=1.0)
+                # self.tree.add_node(e[1], pos_tag=e[1].metadata['pos_tag'], hypernym=e[1].metadata['hypernym'],
+                #                    label=e[1].content, doc_offset=e[1].doc_offset, sent_offset=e[1].sent_offset)
+                # self.tree.add_node(e[2], pos_tag=e[2].metadata['pos_tag'], hypernym=e[2].metadata['hypernym'],
+                #                    label=e[2].content, doc_offset=e[2].doc_offset, sent_offset=e[2].sent_offset)
+                # self.tree.add_edge(e[1], e[2], relation=e[0], type='dependency', weight=1.0)
+                self.tree.add_node(e[1])
+                self.tree.add_node(e[2])
+                self.tree.add_edge(e[1], e[2], relation=e[0])
 
         # print('edge', edges)
 
         # validate tree
         if not nx.is_tree(self.tree):
-            raise ValueError('Invalid tree')
+            # raise ValueError('Invalid tree')
+            self.root = list(self.tree.nodes)[0]
 
         # get root
         self.root = None

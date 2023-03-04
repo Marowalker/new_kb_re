@@ -152,8 +152,10 @@ class Finder:
         rel_map = {}
         token_map = {}
         for rel, pa, ch in deptree:
-            fro = pa.content + '-' + str(pa.sent_offset[0])
-            to = ch.content + '-' + str(ch.sent_offset[0])
+            # fro = pa.content + '-' + str(pa.sent_offset[0])
+            # to = ch.content + '-' + str(ch.sent_offset[0])
+            fro = pa.content + '-' + str(pa.doc_offset[0])
+            to = ch.content + '-' + str(ch.doc_offset[0])
             edges.append((fro, to))
             rel_map[(fro, to)] = rel
             token_map[fro] = pa
@@ -163,8 +165,10 @@ class Finder:
         final_path = []
         sb_path = []
         try:
-            path = nx.shortest_path(graph, from_token.content + '-' + str(from_token.sent_offset[0]),
-                                    to_token.content + '-' + str(to_token.sent_offset[0]))
+            # path = nx.shortest_path(graph, from_token.content + '-' + str(from_token.sent_offset[0]),
+            #                         to_token.content + '-' + str(to_token.sent_offset[0]))
+            path = nx.shortest_path(graph, from_token.content + '-' + str(from_token.doc_offset[0]),
+                                    to_token.content + '-' + str(to_token.doc_offset[0]))
             for i in range(len(path)):
                 children = Finder.find_children(deptree, path[i])
                 sb_path.append('|'.join([ch for ch in children]))
