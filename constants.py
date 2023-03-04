@@ -61,7 +61,7 @@ INPUT_W2V_DIM = 50
 
 TRAINED_MODELS = DATA + 'trained_models/'
 
-EMBED_TYPE = 'disease'
+EMBED_TYPE = 'chemical'
 
 SDP = DATA + 'sdp/'
 W2V_DATA = DATA + 'w2v_model/'

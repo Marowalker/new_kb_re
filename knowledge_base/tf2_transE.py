@@ -270,7 +270,9 @@ class WordnetTransE:
                     h, t, r, h_n, t_n = logits
                     score_pos = self.score_function(h, t, r)
                     score_neg = self.score_function(h_n, t_n, r)
-                    loss_value = tf.reduce_sum(input_tensor=tf.maximum(0.0, 1.0 + score_pos - score_neg))
+                    # loss_value = tf.reduce_sum(input_tensor=tf.maximum(0.0, 1.0 + score_pos - score_neg))
+                    loss_value = tf.reduce_sum(input_tensor=tf.math.add(tf.math.log(tf.math.exp(1.0 + score_pos)),
+                                                                        tf.math.log(tf.math.exp(1.0 - score_neg))))
                     grads = tape.gradient(loss_value, self.model.trainable_weights)
                 self.optimizer.apply_gradients(zip(grads, self.model.trainable_weights))
                 if idx % 100 == 0:
@@ -287,7 +289,9 @@ class WordnetTransE:
                     h, t, r, h_n, t_n = val_logits
                     score_pos = self.score_function(h, t, r)
                     score_neg = self.score_function(h_n, t_n, r)
-                    v_loss = tf.reduce_sum(input_tensor=tf.maximum(0.0, 1.0 + score_pos - score_neg))
+                    # v_loss = tf.reduce_sum(input_tensor=tf.maximum(0.0, 1.0 + score_pos - score_neg))
+                    v_loss = tf.reduce_sum(input_tensor=tf.math.add(tf.math.log(tf.math.exp(1.0 + score_pos)),
+                                                                    tf.math.log(tf.math.exp(1.0 - score_neg))))
                     total_loss.append(float(v_loss))
 
                 val_loss = np.mean(total_loss)

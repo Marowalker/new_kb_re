@@ -120,15 +120,15 @@ class DepTree:
                             siblings.append(n)
             return siblings
 
-    def visualize(self):
-        plotlib.next_plot()
-        node_labels = nx.get_node_attributes(self.tree, 'label')
-        nx.draw_networkx(
-            self.tree,
-            labels=node_labels,
-            pos=graphviz_layout(self.tree, prog='dot'),
-            node_size=300,
-            font_weight='bold',
-            font_color='xkcd:red',
-            node_color='xkcd:light grey'
-        )
+    # def visualize(self):
+    #     plotlib.next_plot()
+    #     node_labels = nx.get_node_attributes(self.tree, 'label')
+    #     nx.draw_networkx(
+    #         self.tree,
+    #         labels=node_labels,
+    #         pos=graphviz_layout(self.tree, prog='dot'),
+    #         node_size=300,
+    #         font_weight='bold',
+    #         font_color='xkcd:red',
+    #         node_color='xkcd:light grey'
+    #     )
