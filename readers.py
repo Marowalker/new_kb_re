@@ -64,13 +64,13 @@ class BioCreativeReader(Reader):
         :return: dict of relation's: {<id>: [(pmid, type, chem_id, dis_id)]}
         """
         # for CID
-        # regex = re.compile(r'^([\d]+)\t(CID)\t([\S]+)\t([\S]+)$', re.U | re.I)
+        regex = re.compile(r'^([\d]+)\t(CID)\t([\S]+)\t([\S]+)$', re.U | re.I)
 
         # for DDI
         # regex = re.compile(r'^([\d]+)\t(true)\t([\S]+)\t([\S]+)$', re.U | re.I)
 
         # for chemprot
-        regex = re.compile(r'^([\d]+)\t(CPR:\d)\t([\S]+)\t([\S]+)$', re.U | re.I)
+        # regex = re.compile(r'^([\d]+)\t(CPR:\d)\t([\S]+)\t([\S]+)$', re.U | re.I)
 
         ret = defaultdict(list)
 

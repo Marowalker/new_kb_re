@@ -78,6 +78,7 @@ class SpacyParser(Parser):
         """
         c = re.sub(r'\s{2,}', ' ', sent.content)
         doc = Spacy.parse(c)
+        root = doc.root
         edges = []
 
         for token in doc:
@@ -94,7 +95,7 @@ class SpacyParser(Parser):
                     print(sent.content)
                     print(token)
                     print(child)
-        return edges
+        return edges, root
 
 
 class NLTKParser(Parser):

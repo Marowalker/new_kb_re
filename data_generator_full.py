@@ -12,13 +12,14 @@ import copy
 import os
 from feature_engineering.deptree.sdp import Finder
 from sklearn.utils import shuffle
+from nltk.corpus import wordnet as wn
 
 
 def process_one(doc):
     a = list()
     for sent in doc.sentences:
-        deptree = parser.parse(sent)
-        a.append(deptree)
+        deptree, root = parser.parse(sent)
+        a.append(tuple([deptree, root]))
     return a
 
 
@@ -119,13 +120,18 @@ for dataset in datasets:
 
     for doc_idx in data_tree:
         # print(data_tree[doc_idx])
-        root_node = models.Token(content='$ROOT$')
+        root_node = models.Token(content='$ROOT$', doc_offset=(-1, -1), sent_offset=(-1, -1))
+        root_node.metadata['pos_tag'] = 'NN'
+        root_node.metadata['hypernym'] = str(wn.synset('entity.n.01').offset())
         all_trees = []
-        for edges in data_tree[doc_idx]:
-            sub_tree = DepTree(edges=edges)
-            all_trees.extend(edges)
-            root_edge = ('sent', root_node, sub_tree.root)
-            all_trees.append(root_edge)
+        for edges, root in data_tree[doc_idx]:
+            if edges:
+                # sub_tree = DepTree(edges=edges)
+                pa = edges[0][1]
+                all_trees.extend(edges)
+                root_edge = ('sent', root_node, root)
+                all_trees.append(root_edge)
+
         data_doctree[doc_idx] = all_trees
 
     # with open(os.path.join(output_path, "sdp_data_acentors_graph." + dataset + ".txt"), "w") as f:
@@ -144,9 +150,10 @@ for dataset in datasets:
                 for tok in sent.tokens:
                     doc_sentences.append(tok)
 
-            sent_offset2idx = {}
+            sent_offset2idx = {(-1, -1): 0}
             for idx, token in enumerate(doc_sentences):
-                sent_offset2idx[token.doc_offset] = idx
+                sent_offset2idx[token.doc_offset] = idx + 1
+
             # pairs = get_candidate(sent, dict_nern[doc.id])
             pairs = get_all_candidates(dict_nern[doc.id])
             if len(pairs) == 0:
@@ -160,51 +167,53 @@ for dataset in datasets:
                 dis_token = dis_entity.tokens[-1]
 
                 # r_path = spd_finder.find_sdp(deptree, chem_token, dis_token)
-                r_path, sb_path = spd_finder.find_sdp_with_sibling(deptree, chem_token, dis_token)
+                if deptree:
+                    r_path, sb_path = spd_finder.find_sdp_with_sibling(deptree, chem_token, dis_token)
 
-                new_r_path = copy.deepcopy(r_path)
-                for i, x in enumerate(new_r_path):
-                    if i % 2 == 0:
-                        x.content += "_" + str(sent_offset2idx[x.sent_offset])
-
-                path = spd_finder.parse_directed_sdp(new_r_path)
-
-                sent_path = '|'.join([token.content for token in doc_sentences])
-
-                if path:
-                    temp = []
-                    for i, token in enumerate(path.split()):
+                    new_r_path = copy.deepcopy(r_path)
+                    for i, x in enumerate(new_r_path):
                         if i % 2 == 0:
-                            token += "|" + sb_path[i // 2]
-                        temp.append(token)
-                    new_path = " ".join(temp)
-                    chem_ids = chem_entity.ids[constants.MESH_KEY].split('|')
-                    dis_ids = dis_entity.ids[constants.MESH_KEY].split('|')
-                    rel = 'CID'
-                    for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
-                        if (doc.id, 'CID', chem_id, dis_id) not in relation:
-                            rel = 'NONE'
-                            break
+                            x.content += "_" + str(sent_offset2idx[x.doc_offset])
 
-                    for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
-                        key = '{}_{}'.format(chem_id, dis_id)
+                    path = spd_finder.parse_directed_sdp(new_r_path)
 
-                        if rel not in sdp_data[key]:
-                            sdp_data[key][rel] = []
+                    sent_path = '|'.join([token.content for token in doc_sentences])
 
-                        # sdp_data[key][rel].append([new_path, sent_path, adj, adj2, X])
-                        sdp_data[key][rel].append([new_path, sent_path])
-                        # sdp_data[key][rel].append([path, sent_path])
+                    if path:
+                        print(path)
+                        temp = []
+                        for i, token in enumerate(path.split()):
+                            if i % 2 == 0:
+                                token += "|" + sb_path[i // 2]
+                            temp.append(token)
+                        new_path = " ".join(temp)
+                        chem_ids = chem_entity.ids[constants.MESH_KEY].split('|')
+                        dis_ids = dis_entity.ids[constants.MESH_KEY].split('|')
+                        rel = 'CID'
+                        for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
+                            if (doc.id, 'CID', chem_id, dis_id) not in relation:
+                                rel = 'NONE'
+                                break
 
-        for pair_key in sdp_data:
-            c, d = pair_key.split('_')
-            if 'CID' in sdp_data[pair_key]:
-                for k in range(len(sdp_data[pair_key]['CID'])):
-                    # sdp, sent_path, adj, adj2, X = sdp_data[pair_key]['CID'][k]
-                    sdp, sent_path = sdp_data[pair_key]['CID'][k]
-                    f.write('{} {} {}\n'.format(pair_key, 'CID', sdp))
+                        for chem_id, dis_id in itertools.product(chem_ids, dis_ids):
+                            key = '{}_{}'.format(chem_id, dis_id)
 
-            if 'NONE' in sdp_data[pair_key]:
-                for k in range(len(sdp_data[pair_key]['NONE'])):
-                    sdp, sent_path = sdp_data[pair_key]['NONE'][k]
-                    f.write('{} {} {}\n'.format(pair_key, 'NONE', sdp))
+                            if rel not in sdp_data[key]:
+                                sdp_data[key][rel] = []
+
+                            # sdp_data[key][rel].append([new_path, sent_path, adj, adj2, X])
+                            sdp_data[key][rel].append([new_path, sent_path])
+                            # sdp_data[key][rel].append([path, sent_path])
+
+            for pair_key in sdp_data:
+                c, d = pair_key.split('_')
+                if 'CID' in sdp_data[pair_key]:
+                    for k in range(len(sdp_data[pair_key]['CID'])):
+                        # sdp, sent_path, adj, adj2, X = sdp_data[pair_key]['CID'][k]
+                        sdp, sent_path = sdp_data[pair_key]['CID'][k]
+                        f.write('{} {} {}\n'.format(pair_key, 'CID', sdp))
+
+                if 'NONE' in sdp_data[pair_key]:
+                    for k in range(len(sdp_data[pair_key]['NONE'])):
+                        sdp, sent_path = sdp_data[pair_key]['NONE'][k]
+                        f.write('{} {} {}\n'.format(pair_key, 'NONE', sdp))
